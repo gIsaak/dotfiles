@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Mimeapp script for adding torrent to transmission-daemon
+
+pgrep -x transmission-da > /dev/null || (transmission-daemon && echo "Transmission-daemon started" && sleep 3)
+transmission-remote -a "$@" && echo "Torrent added"

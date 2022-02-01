@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Rename files in cd by replacing ' ' with '_'
+for f in *
+do
+    new=$(echo $f | sed "s/\s\+/_/g")
+    if [ "$new" != "$f" ]
+    then
+        if [ ! -e "$new" ]
+        then
+            mv "$f" "$new"
+            echo Renaming \'"$f"\' to "$new"
+        else
+            echo Not renaming \'"$f"\' because "$new" already exists
+        fi
+    fi
+done
+

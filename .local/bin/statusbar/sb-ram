@@ -1,0 +1,9 @@
+#!/bin/bash
+
+case $BUTTON in
+	1) $TERMINAL -e htop ;;
+esac
+
+# Show used ram
+free -h | awk '/^Mem/ { print " "$3"/"$2 }' | sed s/i//g
+

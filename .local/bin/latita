@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# Cerca una parola latina nel dizionario (risulato solo in italiano)
+# Dipended da HTML parser pup
+# https://github.com/EricChiang/pup
+
+#TODO enumera risultati
+#TODO superesse ha problemi con with ' and conspicior ha le quadre che rompone le cose
+
+# Controlla argomento
+[ $# -eq 0 ] && echo "No input" && exit 1
+
+word=$1
+OPTIND=1
+while getopts ":hw" option; do
+    case $option in
+        h) echo "Cerca una parola nel dizionario latino"
+           echo
+           echo "Syntax: latita [-l|h] PAROLA"
+           echo "opzioni:"
+           echo "w     Apri risutato nel browser."
+           echo "h     Mostra questo messaggio."
+           echo
+           echo "Nel caso di risultati multipli cerca:"
+           echo "PAROLA100 per il primo risultato etc."
+           exit 0;;
+        w) openurl=1 && shift $((OPTIND-1));;
+       \?) echo "Errore: Opzione non valida"
+           exit 2;;
+    esac
+done
+
+word=$1
+# Genera url with string input
+url="https://www.dizionario-latino.com/dizionario-latino-italiano.php?parola=$word"
+site=$(curl -s $url)
+
+# Ricerca fallita
+echo $site | grep 'non ha prodotto alcun risultato' | grep -q . && echo "No result" && exit 4
+
+# Risultati multipli
+echo $site | pup 'table:nth-last-of-type(2) td:nth-of-type(n+2) text{}' | tr -d '\n' | sed 's/)/)\n/g;1s/^/Possibili risultati:\n/' - | grep . && exit 1
+
+# Unlteriori risultati - tabella di disambiguazione
+echo $site | pup 'ul.disambigua li text{}' | sed '1s/^/Ulteriori risultati:\n/' -
+
+# Lemma
+echo 'Lemma:'
+echo $site | pup 'span.lemma text{}'
+# Paradigma
+echo 'Paradigma:'
+echo $site | pup 'span.paradigma text{}' | head -n 1 | sed 's/\[//; s/\]//'
+# Grammatica
+echo 'Grammatica:'
+echo $site | pup 'span.grammatica text{}' | head -n 1
+# Traduzione
+echo 'Traduzione:'
+SAVEIFS=$IFS # cambia filed separator per accettare spazi negli inout
+IFS=$(echo -en '\n\b')
+num=1
+for trs in $(echo $site | pup 'span.italiano text{}')
+do
+    echo "${num} - ${trs}"
+    num=$(expr $num + 1)
+done
+IFS=$SAVEIFS #reset IFS
+
+# Apri pagine nel browser per -w
+[ ! -z "$openurl" ] && xdg-open $url

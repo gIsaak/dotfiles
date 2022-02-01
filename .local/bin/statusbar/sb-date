@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Display date and time
+
+case $BUTTON in
+	1) cal | dmenu -l 8 > /dev/null;;
+esac
+
+date '+%a %d/%m/%y %H:%M' | sed 's/^/ /'

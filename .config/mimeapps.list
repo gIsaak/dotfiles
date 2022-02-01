@@ -1,0 +1,12 @@
+[Default Applications]
+application/pdf=pdf.desktop;
+x-scheme-handler/tg=userapp-Telegram Desktop-01FA90.desktop;
+x-scheme-handler/magnet=torrent.desktop;
+application/x-bittorrent=torrent.desktop;
+image/png=img.desktop;
+image/jpg=img.desktop;
+image/jpeg=img.desktop;
+image/gif=img.desktop;
+
+[Added Associations]
+x-scheme-handler/tg=userapp-Telegram Desktop-01FA90.desktop;

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Start streaming music to musicpi with pulseaudio-dlna
+
+# start pulseaudio-dlna if not playing already
+pgrep -x pulseaudio-dlna > /dev/null || ( (pulseaudio-dlna > /dev/null 2>&1 &) && echo "Started pulseaudio-dlna" && sleep 3)
+# number of available sinks
+sinknum=$(pacmd "list-sinks" | grep index: | wc -l)
+[ $sinknum -le 1 ] && echo "Nothing to switch, only one sink is available" && exit
+# default sink index
+sinkid=$(pacmd list-sinks | awk '$1 == "*" && $2 == "index:" {print $3}')
+# musicpi sink index
+piid=$(pacmd list-sinks | sed 's|*| |;s/[<->]//g' | awk '/musicpi_dlna/ {print a}{a=$0}' | awk '$1 == "index:" {print $2}')
+
+# set default sink to volumio
+if [ "$sinkid" != "$piid" ]; then
+    pacmd "set-default-sink $piid" && echo "Set default sink to $piid"
+elif [ "$sinkid" = "$piid" ]; then
+    echo "$piid already default sink"
+else
+    echo "Failed to set sink" && exit
+fi
+
+# move all current inputs to the new default sink
+inputs=$(pacmd list-sink-inputs | awk '$1 == "index:" {print $2}')
+for INPUT in $inputs; do
+  pacmd move-sink-input $INPUT $piid
+done
+exit

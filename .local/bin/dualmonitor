@@ -1,0 +1,4 @@
+#!/bin/bash
+
+## Add second monitor to the right
+xrandr --output HDMI-1-4 --auto --output eDP-1 --left-of HDMI-1-4

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# (Pre)view the output of compiled documents
+base="$(echo "${*}" | sed 's/\.[^\/.]*$//')"
+
+case "${*}" in
+    *.md) [ -f "$base".pdf ] && setsid -f xdg-open "$base".pdf >/dev/null 2>&1 || pandoc -t pdf "${*}" | zathura - ;;
+    *.tex) [ -f "$base".pdf ] && setsid -f xdg-open "$base".pdf >/dev/null 2>&1 ;;
+esac

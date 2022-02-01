@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Compile a document for the following extensions
+# .md
+
+file=$(readlink -f "$1")
+dir=${file%/*}
+base="${file%.*}"
+ext="${file##*.}"
+
+cd "$dir" || exit 1
+
+texcomp() { \
+	command="pdflatex"
+    ( head -n5 "$file" | grep -qi 'xelatex' ) && command="xelatex"
+	$command --output-directory="$dir" "$base" &&
+	grep -qi addbibresource "$file" &&
+	biber --input-directory "$dir" "$base" &&
+	$command --output-directory="$dir" "$base" &&
+	$command --output-directory="$dir" "$base"
+}
+
+case "$ext" in
+    md) pandoc -t pdf --highlight-style=kate -s -o "$base".pdf "$file" ;;
+    c) make $base && $base ;; # add option for makefiles
+    py) python $base.py;;
+    tex) texcomp "$file";;
+esac

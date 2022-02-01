@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Full encrypted system backup with borg
+
+# Initialize the repository
+# sudo borg init --encryption=repokey-blake2 /mnt/usb-drive/backups
+
+sudo borg create --list --stats --compression none '/mnt/usb-drive/backups::{now:%d-%m-%Y}' '/' --exclude '/dev/*' --exclude '/proc/*' --exclude '/sys/*' --exclude '/tmp/*' --exclude '/run/*' --exclude '/mnt/*' --exclude '/lost+found' --exclude '/home/isaac/.cache'

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Convert all images in a folder from HEIC to png
+
+for f in *
+do
+    base="${f%.*}"
+    ext="${f##*.}"
+    [ "$ext" == "HEIC" ] && [ ! -e "$base".png ] && heif-convert "$base".HEIC "$base".png && rm "$base".HEIC
+done

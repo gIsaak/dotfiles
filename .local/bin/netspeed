@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Show network traffic speed
+
+humanize () {
+    # MB/s kB/s B/s
+    if [ "$1" -ge 1000000 ]; then
+        fac=1000000; suf="MB/s"
+    elif [ "$1" -ge 1000 ]; then
+        fac=1000; suf="kB/s"
+    else
+        fac=1; suf="B/s"
+    fi
+    printf "%s%s" "$(echo "scale=1;$1/$fac" | bc)" "$suf"
+    return 0
+}
+
+# Get interface name, either "eth0" or "wlan0"
+if [ -d "/sys/class/net/eth0" ]; then
+    rx=/sys/class/net/eth0/statistics/rx_bytes
+    tx=/sys/class/net/eth0/statistics/tx_bytes
+    icon=
+elif [ -d "/sys/class/net/wlan0" ]; then
+    rx=/sys/class/net/wlan0/statistics/rx_bytes
+    tx=/sys/class/net/wlan0/statistics/tx_bytes
+    icon=
+else
+    echo "No interface found";  exit 1
+fi
+
+rx1=$(cat $rx); tx1=$(cat $tx)
+while sleep 1; do
+    rx2=$(cat $rx); tx2=$(cat $tx)
+    printf "%s %s %s\\n" "$icon" "$(humanize $(( rx2-rx1 )))" "$(humanize $(( tx2-tx1 )))"
+    rx1=$rx2; tx1=$tx2
+done
+

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+case $BUTTON in
+    1) $TERMINAL -e netspeed ;;
+esac
+
+# Show the current network connection/SSID, Wifi Strength
+# Original idea: procrastimax dwm_connman (heykeroth.dev@gmail.com)
+
+
+# Get the connmanctl service name ('vpn_', 'wifi_', or 'ethernet_') ignore vpn for now
+# if the servicename is empty, there is no online connection
+servicename=$(connmanctl services | grep -E "^\*AO|^\*O" | grep -Eo 'wifi_.*|ethernet_.*')
+
+if [ ! "$servicename" ]; then
+    printf ""
+    exit 1
+else
+    strength=$(connmanctl services "$servicename" | sed -n -e 's/Strength =//p' | tr -d ' ')
+    conname=$(connmanctl services "$servicename" | sed -n -e 's/Name =//p' | tr -d ' ')
+fi
+
+# if strength is empty, we have a wired connection
+if [ "$strength" ]; then
+    printf "%s %s %s%%" "" "$conname" "$strength"
+else
+    printf "%s %s" "" "$conname"
+fi

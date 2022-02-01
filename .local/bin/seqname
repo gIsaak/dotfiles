@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Sequentially rename files as numbers in the given folder
+# while keeping extension
+# Incremnetal number padded to 3 digit integer
+
+count=1
+for file in $(ls "$1")
+do
+    ext="${file##*.}"
+    cp $1$file `printf "%s%03d.%s-new" $1 $count $ext`
+    rm $1$file
+    count=$(( $count + 1 ))
+done
+
+for file in $(ls "$1")
+do
+    newname="${file%-*}"
+    mv $1$file $1$newname
+done
+
