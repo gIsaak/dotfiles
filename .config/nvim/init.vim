@@ -63,8 +63,6 @@ call plug#end()
     lua require'lspconfig'.pyright.setup{}
     "" texlab
     lua require'lspconfig'.texlab.setup{}
-    "" bashls
-    lua require'lspconfig'.bashls.setup{}
 
 "" Treesitter highlights, indentation and folding
 lua << EOF
