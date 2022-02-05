@@ -67,3 +67,5 @@ IFS=$SAVEIFS #reset IFS
 
 # Apri pagine nel browser per -w
 [ ! -z "$openurl" ] && xdg-open $url
+
+
