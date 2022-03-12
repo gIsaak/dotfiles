@@ -17,18 +17,21 @@ but you are never really done configuring vim.
 - Python2 disabled
 - Python3 set up: pynvim installed with pacman
 
-### Plugins
+## Plugins
 Remember to have [vim plug](https://github.com/junegunn/vim-plug) installed
 before adding any plugins
-- [treesitter](https://github.com/nvim-treesitter/nvim-treesitter):parsing library that allows better highlighting,
+
+- [treesitter](https://github.com/nvim-treesitter/nvim-treesitter): parsing library that allows better highlighting,
 indentation, folding etc.
 - [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig): LSP support. See [avaliable servers](https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md).
+
+### LSP servers
 The following are used in this configuration, install with pacman if possible:
-    + [pyright](https://github.com/Microsoft/pyright)
-    + [texlab](https://github.com/latex-lsp/texlab)
+
++ [pylsp](https://github.com/python-lsp/python-lsp-server)
+    - [pyflakes](https://github.com/PyCQA/pyflakes): error detection
++ [texlab](https://github.com/latex-lsp/texlab)
 
 ## TODO
-- Keybindings for LSP using [on_attach function](https://github.com/neovim/nvim-lspconfig#Suggested-configuration)
-- [Autocompletion](https://github.com/neovim/nvim-lspconfig/wiki/Autocompletion) with [nvim-cmp](https://github.com/hrsh7th/nvim-cmp/)
 - [Go full Lua](https://github.com/nanotee/nvim-lua-guide)
 - Consider switching to [packer](https://github.com/wbthomason/packer.nvim)
