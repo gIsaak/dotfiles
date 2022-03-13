@@ -77,5 +77,11 @@ call plug#end()
     lua require('lsp.lsp-config')
 
 "" Colorscheme
-    lua require('colors.catppuccin')
+lua << EOF
+    local catppuccin = require("catppuccin")
+    catppuccin.setup({
+        transparent_background = true,
+    })
+EOF
+
     colorscheme catppuccin
