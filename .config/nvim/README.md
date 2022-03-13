@@ -35,3 +35,4 @@ The following are used in this configuration, install with pacman if possible:
 ## TODO
 - [Go full Lua](https://github.com/nanotee/nvim-lua-guide)
 - Consider switching to [packer](https://github.com/wbthomason/packer.nvim)
+- Update this README

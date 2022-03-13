@@ -1,6 +1,25 @@
 ""Vimrc - Vim config file
 let mapleader = ","
 
+"" Plugins
+call plug#begin('~/.config/nvim/plugged')
+    "" LSP configs
+    Plug 'neovim/nvim-lspconfig'
+    "" Autocomplete
+    Plug 'hrsh7th/cmp-buffer'
+    Plug 'hrsh7th/cmp-path'
+    Plug 'hrsh7th/cmp-cmdline'
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'hrsh7th/nvim-cmp'
+    "" Snippets
+    Plug 'L3MON4D3/LuaSnip'
+    Plug 'saadparwaiz1/cmp_luasnip'
+    "" Treesitter
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    "" Colorschemes
+    Plug 'catppuccin/nvim', {'as': 'catppuccin'}
+call plug#end()
+
 "" General
     " set tab width in spaces
     set tabstop=4
@@ -50,142 +69,13 @@ let mapleader = ","
     map <leader>e :setlocal spell! spelllang=en_us<CR>
     map <leader>i :setlocal spell! spelllang=it<CR>
 
-"" Plugins
-call plug#begin('~/.config/nvim/plugged')
-    "" LSP configs
-    Plug 'neovim/nvim-lspconfig'
-    "" Autocomplete
-    Plug 'hrsh7th/cmp-buffer'
-    Plug 'hrsh7th/cmp-path'
-    Plug 'hrsh7th/cmp-cmdline'
-    Plug 'hrsh7th/cmp-nvim-lsp'
-    Plug 'hrsh7th/nvim-cmp'
-    "" Snippets
-    Plug 'L3MON4D3/LuaSnip'
-    Plug 'saadparwaiz1/cmp_luasnip'
-    "" Treesitter
-    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    "" Colorschemes
-    Plug 'catppuccin/nvim', {'as': 'catppuccin'}
-call plug#end()
-
 "" Autocomplete
-set completeopt=menu,menuone,noselect
-lua << EOF
-  -- Setup nvim-cmp.
-  local cmp = require'cmp'
+    "" Insert mode completion (useful for nvim-cmp)
+    set completeopt=menu,menuone,noselect
 
-  cmp.setup {
-    snippet = {
-      expand = function(args)
-        require('luasnip').lsp_expand(args.body)
-      end,
-    },
-  mapping = {
-    ['<C-p>'] = cmp.mapping.select_prev_item(),
-    ['<C-n>'] = cmp.mapping.select_next_item(),
-    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = false,
-      },
-    },
-    sources = {
-      { name = 'nvim_lsp' },
-      { name = 'path' },
-      { name = 'luasnip' },
-      { name = 'buffer', keywork_lenght = 5},
-    },
-  }
+"" Builtin LSP
+    lua require('lsp.lsp-config')
 
-  cmp.setup.cmdline(':', {
-  sources = {
-    { name = 'cmdline' }
-  }
-})
-cmp.setup.cmdline('?', {
-  sources = {
-    { name = 'buffer' },
-  }
-})
-cmp.setup.cmdline('/', {
-  sources = {
-    { name = 'buffer' },
-  }
-})
-
-  local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-
--- Builtin LSP
-    -- Lsp mappings
-    local opts = { noremap=true, silent=true }
-    vim.api.nvim_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
-    vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
-    vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
-    vim.api.nvim_set_keymap('n', '<space>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
-    local on_attach = function(client, bufnr)
-    -- Mappings
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>k', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gt', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>r', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>a', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-    end
-     -- Setup lspconfig.
-    local lspconfig = require('lspconfig')
-    local servers = {'pylsp', 'texlab', 'ccls'}
-    for _, lsp in ipairs(servers) do
-        lspconfig[lsp].setup {
-            capabilities = capabilities,
-            on_attach = on_attach,
-        }
-    end
-EOF
-
-"" Treesitter highlights, indentation and folding
-lua << EOF
-    require'nvim-treesitter.configs'.setup {
-      ensure_installed = {
-          "bash",
-          "c",
-          "cpp",
-          "latex",
-          "bibtex",
-          "python",
-          "lua",
-          },
-      highlight = { enable = true },
-      incremental_selection = {
-      enable = true,
-      keymaps = {
-          init_selection = "gnn",
-          node_incremental = "grn",
-          scope_incremental = "grc",
-          node_decremental = "grm",
-          },
-      },
-      textobjects = { enable = false },
-      indent = { enable = false }
-    }
-    -- Folding
-    vim.api.nvim_exec([[
-    set foldmethod=expr
-    set foldexpr=nvim_treesitter#foldexpr()
-    ]], true)
-EOF
-
-"" colorscheme config
-lua << EOF
-    local catppuccin = require("catppuccin")
-    catppuccin.setup({
-    transparent_background = true,
-    })
-EOF
-colorscheme catppuccin
+"" Colorscheme
+    lua require('colors.catppuccin')
+    colorscheme catppuccin
