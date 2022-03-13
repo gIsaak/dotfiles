@@ -63,9 +63,10 @@ call plug#begin('~/.config/nvim/plugged')
     "" Snippets
     Plug 'L3MON4D3/LuaSnip'
     Plug 'saadparwaiz1/cmp_luasnip'
-
     "" Treesitter
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    "" Colorschemes
+    Plug 'catppuccin/nvim', {'as': 'catppuccin'}
 call plug#end()
 
 "" Autocomplete
@@ -139,7 +140,7 @@ cmp.setup.cmdline('/', {
     end
      -- Setup lspconfig.
     local lspconfig = require('lspconfig')
-    local servers = {'pylsp', 'texlab'}
+    local servers = {'pylsp', 'texlab', 'ccls'}
     for _, lsp in ipairs(servers) do
         lspconfig[lsp].setup {
             capabilities = capabilities,
@@ -151,14 +152,40 @@ EOF
 "" Treesitter highlights, indentation and folding
 lua << EOF
     require'nvim-treesitter.configs'.setup {
-      ensure_installed = "maintained", -- only mantained parsers
-      highlight = {
-        enable = false,
+      ensure_installed = {
+          "bash",
+          "c",
+          "cpp",
+          "latex",
+          "bibtex",
+          "python",
+          "lua",
+          },
+      highlight = { enable = true },
+      incremental_selection = {
+      enable = true,
+      keymaps = {
+          init_selection = "gnn",
+          node_incremental = "grn",
+          scope_incremental = "grc",
+          node_decremental = "grm",
+          },
       },
-  indent = {
-      enable = false,
-      }
+      textobjects = { enable = false },
+      indent = { enable = false }
     }
-    --vim.opt.foldmethod=expr
-    --vim.opt.foldexpr=nvim_treesitter#foldexpr()
+    -- Folding
+    vim.api.nvim_exec([[
+    set foldmethod=expr
+    set foldexpr=nvim_treesitter#foldexpr()
+    ]], true)
 EOF
+
+"" colorscheme config
+lua << EOF
+    local catppuccin = require("catppuccin")
+    catppuccin.setup({
+    transparent_background = true,
+    })
+EOF
+colorscheme catppuccin
