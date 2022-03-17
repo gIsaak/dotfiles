@@ -16,6 +16,10 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'saadparwaiz1/cmp_luasnip'
     "" Treesitter
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    "" Fuzzy finder
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-telescope/telescope.nvim'
+    Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
     "" Colorschemes
     Plug 'catppuccin/nvim', {'as': 'catppuccin'}
 call plug#end()

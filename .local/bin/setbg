@@ -3,8 +3,7 @@
 ### Set background
 # Pick a random image from the Wallpaper folder, set it as background and generate colorscheme with wal
 
-bgloc="${HOME}/Documents/images/wallpapers"
+bgloc="$HOME/Documents/images/wallpapers"
 bg=$(find "$bgloc" -iregex '.*.\(jpg\|jpeg\|png\|gif\)' -type f | shuf -n 1)
 
-wal -i "$bg"
-source "${XDG_CACHE_HOME:-$HOME/.cache}/wal/colors.sh"
+wal -i "$bg" -o "${XDG_CONFIG_HOME:-$HOME/.config}/wal/postrun" >/dev/null 2>&1
