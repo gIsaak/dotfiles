@@ -4,6 +4,7 @@
 source "${XDG_CACHE_HOME:-$HOME/.cache}/wal/colors.sh"
 ln -sf "${XDG_CACHE_HOME}/wal/dunstrc" "${XDG_CONFIG_HOME}/dunst/dunstrc"
 ln -sf "${XDG_CACHE_HOME}/wal/zathurarc" "${XDG_CONFIG_HOME}/zathura/zathurarc"
+ln -sf "${XDG_CACHE_HOME}/wal/colors-alacritty.yml" "${XDG_CONFIG_HOME}/alacritty/colors.yml"
 # restart dunst with new colors
 pkill dunst; setsid -f dunst
 # restart dwm to with new colors (requires dwm's restartsig patch)
