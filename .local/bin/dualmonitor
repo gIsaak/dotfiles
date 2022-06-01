@@ -1,4 +1,37 @@
 #!/bin/bash
 
-## Add second monitor to the right
-xrandr --output HDMI-1-4 --auto --output eDP-1 --left-of HDMI-1-4
+## Manage dual monitor setup
+
+[ $# -eq 0 ] && echo "Usage: dualmonitor [-h|m|l|r]" && exit 1
+
+intern=eDP-1
+extern=HDMI-1-4
+res=1920x1080
+
+OPTIND=1
+while getopts ":hmlrR" option; do
+    case $option in
+        h) echo "Set up dual monitor"
+           echo
+           echo "Syntax: dualmonitor [-m|l|r]"
+           echo "options:"
+           echo "h     Print this Help."
+           echo "m     Mirror screen."
+           echo "l     Add monitor to the left."
+           echo "r     Add monitor to the right."
+           echo "R     Reset to default monitor"
+           exit 0;;
+        m) xrandr --output $intern --mode $res --fb $res --panning $res --output $extern --mode $res --same-as $intern
+           exit 0;;
+        l) xrandr --output $extern --auto --output $intern --right-of $extern && notify-send "Added second screen to the left"
+           exit 0;;
+        r) xrandr --output $extern --auto --output $intern --left-of $extern && notify-send "Added screen to the right"
+           exit 0;;
+        R) xrandr --output "$extern" --off --output "$intern" --auto && notify-send "Reset to default monitor"
+           exit 0;;
+       \?) echo "Error: Invalid option"
+           exit 3;;
+    esac
+done
+
+

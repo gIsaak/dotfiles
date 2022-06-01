@@ -5,6 +5,7 @@ let mapleader = ","
 call plug#begin('~/.config/nvim/plugged')
     "" LSP configs
     Plug 'neovim/nvim-lspconfig'
+    Plug 'scalameta/nvim-metals'
     "" Autocomplete
     Plug 'hrsh7th/cmp-buffer'
     Plug 'hrsh7th/cmp-path'
@@ -20,8 +21,12 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'nvim-lua/plenary.nvim'
     Plug 'nvim-telescope/telescope.nvim'
     Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+    "" Status line
+    Plug 'nvim-lualine/lualine.nvim'
     "" Colorschemes
     Plug 'catppuccin/nvim', {'as': 'catppuccin'}
+    """ Display hex colors
+    Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 call plug#end()
 
 "" General
@@ -47,10 +52,32 @@ call plug#end()
     syntax on
     " encoding
     set encoding=utf-8
-    " ctrl+n completion
+    " ctrl-n completion
     set wildmode=longest,list,full
     " set splitwindows to open on the right
-    set splitbelow splitright
+    set splitright splitbelow
+
+"" Terminal
+    " turn terminal to normal mode with escape
+    tnoremap <Esc> <C-\><C-n>
+    " start terminal in insert mode
+    au BufEnter * if &buftype == 'terminal' | :startinsert | endif
+    " open terminal on Alt-t
+    function! OpenTerminal()
+      split term://bash
+      resize 10
+    endfunction
+    nnoremap <A-t> :call OpenTerminal()<CR>
+
+"" Panel movement
+    tnoremap <A-h> <C-\><C-n><C-w>h
+    tnoremap <A-j> <C-\><C-n><C-w>j
+    tnoremap <A-k> <C-\><C-n><C-w>k
+    tnoremap <A-l> <C-\><C-n><C-w>l
+    nnoremap <A-h> <C-w>h
+    nnoremap <A-j> <C-w>j
+    nnoremap <A-k> <C-w>k
+    nnoremap <A-l> <C-w>l
 
 "" Python
     let g:loaded_python_provider = 0
@@ -62,22 +89,30 @@ call plug#end()
     " automatically delete whitespaces
     autocmd BufWritePre * %s/\s\+$//e
 
-"" Scripts
-    " compile
-	map <leader>c :w! \| !compiler "%"<CR>
-    " preview
-    map <leader>p :silent ! prev "<c-r>%"<CR><CR>
+"" Plugins
+    "" hexokinase
+    let g:Hexokinase_highlighters = ['backgroundfull']
 
-"" Spellcheck
-    " english
+"" Mappings
+    nnoremap <leader>n :noh <CR>
+    "" scripts
+	map <leader>c :w! \| !compiler "%"<CR>
+    map <leader>p :silent ! prev "<c-r>%"<CR><CR>
+    "" spellcheck
     map <leader>e :setlocal spell! spelllang=en_us<CR>
     map <leader>i :setlocal spell! spelllang=it<CR>
+    map <leader>d :setlocal spell! spelllang=de<CR>
+    " hexokinase
+    nnoremap <F12> :HexokinaseToggle<CR>
+    " lsp
+    nnoremap <F8> :LspStart<CR>
+    nnoremap <F9> :LspStop<CR>
 
 "" Autocomplete
     "" Insert mode completion (useful for nvim-cmp)
     set completeopt=menu,menuone,noselect
 
-"" Builtin LSP
+"" LSP
     lua require('lsp.lsp-config')
 
 "" Colorscheme
@@ -87,5 +122,5 @@ lua << EOF
         transparent_background = true,
     })
 EOF
-
     colorscheme catppuccin
+

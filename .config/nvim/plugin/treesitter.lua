@@ -8,6 +8,7 @@ require'nvim-treesitter.configs'.setup {
         "bibtex",
         "python",
         "lua",
+        "scala",
     },
     -- Highlight
     highlight = { enable = true },

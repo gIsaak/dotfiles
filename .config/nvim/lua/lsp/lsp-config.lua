@@ -1,6 +1,6 @@
--- Lsp mappings
--- global mappings
-local opts = { noremap=true, silent=true, buffer=true}
+local api = vim.api
+-- LSP global mappings
+local opts = { noremap=true, silent=true, buffer=true }
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
@@ -8,17 +8,19 @@ vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 -- per-buffer mappings
 local bopts = { noremap=true, silent=true, buffer=0}
 local on_attach = function()
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bopts)
-    vim.keymap.set('n', '<space>k', vim.lsp.buf.signature_help, bopts)
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bopts)
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bopts)
-    vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, bopts)
-    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bopts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bopts)
-    vim.keymap.set('n', '<space>r', vim.lsp.buf.rename, bopts)
-    vim.keymap.set('n', '<space>a', vim.lsp.buf.code_action, bopts)
+  vim.keymap.set('n', 'K',          vim.lsp.buf.hover, bopts)
+  vim.keymap.set('n', '<leader>sh', vim.lsp.buf.signature_help, bopts)
+  vim.keymap.set('n', 'gD',         vim.lsp.buf.declaration, bopts)
+  vim.keymap.set('n', 'gd',         vim.lsp.buf.definition, bopts)
+  vim.keymap.set('n', 'gt',         vim.lsp.buf.type_definition, bopts)
+  vim.keymap.set('n', 'gi',         vim.lsp.buf.implementation, bopts)
+  vim.keymap.set('n', 'gr',         vim.lsp.buf.references, bopts)
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bopts)
+  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bopts)
+  vim.keymap.set('n', '<leader>cl', vim.lsp.codelens.run, bopts)
+  vim.keymap.set('n', '<leader>o',  vim.lsp.buf.formatting, bopts)
 end
- -- Setup lspconfig.
+-- Setup lspconfig.
 local lspconfig = require('lspconfig')
 -- nvim-cmp integration
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
@@ -56,5 +58,80 @@ end
 
 for server, config in pairs(servers) do
   setup_server(server, config)
+end
+
+
+-- Metals specific setup
+vim.opt_global.shortmess:remove("F"):append("c")
+local metals_config = require('metals').bare_config()
+
+metals_config.settings = {
+  showImplicitArguments = true,
+  showImplicitConversionsAndClasses = true,
+  showInferredType = true,
+}
+
+metals_config.init_options.statusBarProvider = "on"
+metals_config.capabilities = capabilities
+
+local lsp_group = api.nvim_create_augroup("lsp", { clear = true })
+
+-- Metals specific mappings
+metals_config.on_attach = function(client, bufnr)
+  on_attach()
+  vim.keymap.set('v', 'K', function() return require('metals').type_of_range() end)
+  vim.keymap.set('n', '<leader>ws', function() return require('metals').hover_worksheet() end)
+  vim.keymap.set('n', '<leader>tt', function() return require('metals.tvp').toggle_tree_view() end)
+  vim.keymap.set('n', '<leader>tr', function() return require('metals.tvp').reveal_in_tree() end)
+  vim.keymap.set('n', '<leader>st', function() return require('metals').toggle_setting('showImplicitArguments')() end)
+
+  -- Use Metals document_highlight and codelens when serverso do not support them
+  api.nvim_create_autocmd("CursorHold", {
+    callback = vim.lsp.buf.document_highlight,
+    buffer = bufnr,
+    group = lsp_group,
+  })
+  api.nvim_create_autocmd("CursorMoved", {
+    callback = vim.lsp.buf.clear_references,
+    buffer = bufnr,
+    group = lsp_group,
+  })
+  api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+    callback = vim.lsp.codelens.refresh,
+    buffer = bufnr,
+    group = lsp_group,
+  })
+end
+
+local nvim_metals_group = api.nvim_create_augroup("nvim-metals", { clear = true })
+api.nvim_create_autocmd("FileType", {
+  pattern = { "scala", "sbt", "java" },
+  callback = function()
+    require("metals").initialize_or_attach(metals_config)
+  end,
+  group = nvim_metals_group,
+})
+
+-- UI
+-- round borders
+vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
+  border = 'rounded',
+})
+
+vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+  border = 'rounded',
+})
+
+-- diagnostic signs
+local signs = {
+  Error = '' .. ' ',
+  Warn = '' .. ' ',
+  Hint = '' .. ' ',
+  Info = '' .. ' ',
+}
+
+for type, icon in pairs(signs) do
+  local hl = 'DiagnosticSign' .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
 end
 
