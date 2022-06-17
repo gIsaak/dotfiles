@@ -15,15 +15,15 @@ import:
 # Font configuration
 font:
   normal:
-    family: monospace
+    family: Hack Nerd Font
     style: Regular
   bold:
-    family: monospace
+    family: Hack Nerd Font
     style: Bold
   italic:
     style: Italic
   bold_italic:
-    family: monospace
+    family: Hack Nerd Font
     style: Bold Italic
   size: 9.0
 

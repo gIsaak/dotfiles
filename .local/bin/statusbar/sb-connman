@@ -1,7 +1,8 @@
 #!/bin/bash
 
 case $BUTTON in
-    1) $TERMINAL -e netspeed ;;
+    1) $TERMINAL -e connmanctl ;;
+    3) $TERMINAL -e netspeed ;;
 esac
 
 # Show the current network connection/SSID, Wifi Strength
@@ -22,7 +23,7 @@ fi
 
 # if strength is empty, we have a wired connection
 if [ "$strength" ]; then
-    printf "%s %s %s%%" "" "$conname" "$strength"
+    printf "%s %s %s%%" " " "$conname" "$strength"
 else
-    printf "%s %s" "" "$conname"
+    printf "%s %s" " " "$conname"
 fi

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Set pulseaudio default sink with dmenu
+nsinks="$(pacmd list-sinks | grep -e "index:" | wc -l)" || exit 1
+defsink="$(pacmd list-sinks | awk '$1 == "*" && $2 == "index:" {print $3}')" || exit 2
+sinks="$(pacmd list-sinks | grep -e 'name:' -e 'index:' |sed 's/\*/ /; s/[<->]//g; s/name://; s/index://' | sed 'N;s/\n/ /' | awk '{print $1" "$2}')" || exit 3
+chosen="$(echo "$sinks" | dmenu -l "$nsinks" -i -p "Select sink (default: $defsink)" | awk '{print $1}')" || exit 3
+
+pacmd "set-default-sink $chosen" && echo "Set default sink to $chosen"
+
+# move all current inputs to the new default sink
+inputs="$(pacmd list-sink-inputs | awk '$1 == "index:" {print $2}')" || exit 4
+for INPUT in $inputs; do
+  pacmd move-sink-input "$INPUT" "$chosen"
+done
+exit

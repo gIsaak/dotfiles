@@ -28,6 +28,7 @@ local servers = {
   pylsp = true,
   texlab = true,
   ccls = true,
+  bashls = true,
   sumneko_lua = {
     settings = {
       Lua = {
@@ -77,13 +78,25 @@ metals_config.capabilities = capabilities
 local lsp_group = api.nvim_create_augroup("lsp", { clear = true })
 
 -- Metals specific mappings
-metals_config.on_attach = function(client, bufnr)
+metals_config.on_attach = function(_, bufnr)
   on_attach()
   vim.keymap.set('v', 'K', function() return require('metals').type_of_range() end)
   vim.keymap.set('n', '<leader>ws', function() return require('metals').hover_worksheet() end)
   vim.keymap.set('n', '<leader>tt', function() return require('metals.tvp').toggle_tree_view() end)
   vim.keymap.set('n', '<leader>tr', function() return require('metals.tvp').reveal_in_tree() end)
   vim.keymap.set('n', '<leader>st', function() return require('metals').toggle_setting('showImplicitArguments')() end)
+  vim.keymap.set('n', '<leader>T',
+    function()
+      local testSub = { ".scala", "Spec.scala", "Test.scala" }
+      local testName = vim.fn.expand('%:p'):gsub("main","test",1)
+      for _, v in pairs(testSub) do
+        local testPath = testName:gsub(".scala$", v, 1)
+        if (vim.fn.filereadable(testPath) == 1) then
+          return vim.api.nvim_command('edit ' .. testPath);
+        end
+      end
+      return print("No scala tests found");
+    end) -- go to test if present
 
   -- Use Metals document_highlight and codelens when serverso do not support them
   api.nvim_create_autocmd("CursorHold", {

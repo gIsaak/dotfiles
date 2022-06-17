@@ -7,7 +7,7 @@ case $BUTTON in
 	3) pamixer -t ;;
 esac
 
-[ $(pamixer --get-mute) = true ] && echo  && exit
+[ $(pamixer --get-mute) = true ] && echo "婢" && exit
 
 vol="$(pamixer --get-volume)"
 

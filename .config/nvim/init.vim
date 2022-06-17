@@ -23,6 +23,7 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
     "" Status line
     Plug 'nvim-lualine/lualine.nvim'
+    Plug 'kyazdani42/nvim-web-devicons'
     "" Colorschemes
     Plug 'catppuccin/nvim', {'as': 'catppuccin'}
     """ Display hex colors
@@ -62,12 +63,31 @@ call plug#end()
     tnoremap <Esc> <C-\><C-n>
     " start terminal in insert mode
     au BufEnter * if &buftype == 'terminal' | :startinsert | endif
-    " open terminal on Alt-t
-    function! OpenTerminal()
-      split term://bash
-      resize 10
+    " Terminal Function
+    let g:term_buf = 0
+    let g:term_win = 0
+    function! TermToggle(height)
+        if win_gotoid(g:term_win)
+            hide
+        else
+            botright new
+            exec "resize " . a:height
+            try
+                exec "buffer " . g:term_buf
+            catch
+                call termopen($SHELL, {"detach": 0})
+                let g:term_buf = bufnr("")
+                set nonumber
+                set norelativenumber
+                set signcolumn=no
+            endtry
+            startinsert!
+            let g:term_win = win_getid()
+        endif
     endfunction
-    nnoremap <A-t> :call OpenTerminal()<CR>
+    " toggle terminal on Alt-t
+    nnoremap <A-t> :call TermToggle(10)<CR>
+    tmap <A-t> <ESC>:call TermToggle(10)<CR>
 
 "" Panel movement
     tnoremap <A-h> <C-\><C-n><C-w>h
@@ -78,6 +98,10 @@ call plug#end()
     nnoremap <A-j> <C-w>j
     nnoremap <A-k> <C-w>k
     nnoremap <A-l> <C-w>l
+    nnoremap <Left> :vertical resize +2<CR>
+    nnoremap <Right> :vertical resize -2<CR>
+    nnoremap <Up> :resize +2<CR>
+    nnoremap <Down> :resize -2<CR>
 
 "" Python
     let g:loaded_python_provider = 0

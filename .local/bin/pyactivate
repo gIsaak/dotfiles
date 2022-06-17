@@ -4,30 +4,15 @@
 
 # Put the following lines in your bashrc
 # export PYVENVS="path/to/env/folder"
-# alias pyactivate = source pyactivate
+# alias pyactivate="source pyactivate"
 
-[ $# -eq 0 ] && echo "Usage: pyactivate ENVNAME" && return 1
 
-OPTIND=1
-while getopts ":hlc:" option; do
-    case $option in
-        h) echo "Activate python virtual environment"
-           echo
-           echo "Syntax: pyactivate [-h|l] ENVNAME"
-           echo "options:"
-           echo "h     Print this Help."
-           echo "l     Print python virtual environments list."
-           return 0;;
-        l) ls "$PYVENVS"
-           return 0;;
-       \?) echo "Error: Invalid option"
-           return 3;;
-    esac
-done
+nenv="$(ls "$PYVENVS" | wc -l)"
+env="$(ls "$PYVENVS" | dmenu -l "$nenv" -i -p "Select env:")" || return 1
+env="$PYVENVS/$env"
 
-env="$PYVENVS/$1"
-if [ -d $env ]; then
+if [ -d "$env" ]; then
     source "${env}/bin/activate"
 else
-    echo "Error: Environment $1 does not exist"
+    echo "Error: Environment does not exist" && return 2
 fi
