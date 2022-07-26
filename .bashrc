@@ -12,6 +12,8 @@
 #fi
 
 # Ctrl-o - lf to chage directories
+alias lf="lfub"
+source "${XDG_CONFIG_HOME:-$HOME/.config}/lf/icons"
 lfcd () {
     tmp="$(mktemp -uq)"
     trap 'rm -f $tmp >/dev/null 2>&1' HUP INT QUIT TERM PWR EXIT
@@ -30,8 +32,8 @@ source /usr/share/fzf/completion.bash
 # Use neovim for vim if present
 [ -x "$(command -v nvim)" ] && alias vim="nvim" vimdiff="nvim -d"
 
-# Add ~/.local/bin to the PATH
-export PATH="$HOME/.local/bin:$HOME/.local/bin/statusbar:$PATH"
+# Add ~/.local/bin and coursier to the PATH
+export PATH="$HOME/.local/share/coursier/bin:$HOME/.local/bin:$HOME/.local/bin/statusbar:$PATH"
 
 # Start ssh-agent
 [ -z "$SSH_AUTH_SOCK" ] && eval $(ssh-agent) && ssh-add ~/.ssh/git/id_rsa
@@ -91,7 +93,6 @@ alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias cdbi="cd $HOME/.local/bin"
 alias cdwm="cd $HOME/.local/bin/src/dwm"
 alias cdsb="cd $HOME/.local/bin/src/dwmblocks"
-alias cdco="cd $HOME/Documents/Code"
 alias cdwr="cd $HOME/Documents/work"
 alias cdbc="cd $HOME/Documents/work/scala-bootcamp-2022"
 alias cdde="cd $HOME/Documents/learning/deutsch/abendkurs_kaiserslautern_A_2022/"

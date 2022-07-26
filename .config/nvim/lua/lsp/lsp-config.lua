@@ -5,6 +5,14 @@ vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
+-- dap
+vim.keymap.set('n', '<leader>dc', function() return require('dap').continue() end)
+vim.keymap.set('n', '<leader>dr', function() return require('dap').repl.toggle() end)
+vim.keymap.set('n', '<leader>dK', function() return require('dap.ui.widgets').hover() end)
+vim.keymap.set('n', '<leader>dt', function() return require('dap').toggle_breakpoint() end)
+vim.keymap.set('n', '<leader>dso', function() return require('dap').step_over() end)
+vim.keymap.set('n', '<leader>dsi', function() return require('dap').step_into() end)
+vim.keymap.set('n', '<leader>dl', function() return require('dap').run_last() end)
 -- per-buffer mappings
 local bopts = { noremap=true, silent=true, buffer=0}
 local on_attach = function()
@@ -77,9 +85,33 @@ metals_config.capabilities = capabilities
 
 local lsp_group = api.nvim_create_augroup("lsp", { clear = true })
 
+-- dap settings
+local dap = require("dap")
+
+dap.configurations.scala = {
+  {
+    type = "scala",
+    request = "launch",
+    name = "RunOrTest",
+    metals = {
+      runType = "runOrTestFile",
+      --args = { "firstArg", "secondArg", "thirdArg" }, -- here just as an example
+    },
+  },
+  {
+    type = "scala",
+    request = "launch",
+    name = "Test Target",
+    metals = {
+      runType = "testTarget",
+    },
+  },
+}
+
 -- Metals specific mappings
 metals_config.on_attach = function(_, bufnr)
   on_attach()
+  require("metals").setup_dap()
   vim.keymap.set('v', 'K', function() return require('metals').type_of_range() end)
   vim.keymap.set('n', '<leader>ws', function() return require('metals').hover_worksheet() end)
   vim.keymap.set('n', '<leader>tt', function() return require('metals.tvp').toggle_tree_view() end)
@@ -98,7 +130,7 @@ metals_config.on_attach = function(_, bufnr)
       return print("No scala tests found");
     end) -- go to test if present
 
-  -- Use Metals document_highlight and codelens when serverso do not support them
+  -- Use Metals document_highlight and codelens when servers do not support them
   api.nvim_create_autocmd("CursorHold", {
     callback = vim.lsp.buf.document_highlight,
     buffer = bufnr,

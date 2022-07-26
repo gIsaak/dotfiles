@@ -17,6 +17,8 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'saadparwaiz1/cmp_luasnip'
     "" Treesitter
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    "" DAP
+    Plug 'mfussenegger/nvim-dap'
     "" Fuzzy finder
     Plug 'nvim-lua/plenary.nvim'
     Plug 'nvim-telescope/telescope.nvim'
@@ -24,6 +26,8 @@ call plug#begin('~/.config/nvim/plugged')
     "" Status line
     Plug 'nvim-lualine/lualine.nvim'
     Plug 'kyazdani42/nvim-web-devicons'
+    "" Comment
+    Plug 'numToStr/Comment.nvim'
     "" Colorschemes
     Plug 'catppuccin/nvim', {'as': 'catppuccin'}
     """ Display hex colors
