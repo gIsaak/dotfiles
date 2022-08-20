@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Set pulseaudio default source with dmenu
+nsources="$(pacmd list-sources | grep -e "index:" | wc -l)" || exit 1
+defsource="$(pacmd list-sources | awk '$1 == "*" && $2 == "index:" {print $3}')" || exit 2
+sources="$(pacmd list-sources | grep -e 'name:' -e 'index:' |sed 's/\*/ /; s/[<->]//g; s/name://; s/index://' | sed 'N;s/\n/ /' | awk '{print $1" "$2}')" || exit 3
+chosen="$(echo "$sources" | dmenu -l "$nsources" -i -p "Select source (default: $defsource)" | awk '{print $1}')" || exit 3
+
+pacmd "set-default-source $chosen" && echo "Set default source to $chosen"
+
+# move all current outputs to the new default source
+outputs="$(pacmd list-source-outputs | awk '$1 == "index:" {print $2}')" || exit 4
+for OUTPUT in $outputs; do
+  pacmd move-source-output "$OUTPUT" "$chosen"
+done
+exit

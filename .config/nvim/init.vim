@@ -67,31 +67,10 @@ call plug#end()
     tnoremap <Esc> <C-\><C-n>
     " start terminal in insert mode
     au BufEnter * if &buftype == 'terminal' | :startinsert | endif
-    " Terminal Function
-    let g:term_buf = 0
-    let g:term_win = 0
-    function! TermToggle(height)
-        if win_gotoid(g:term_win)
-            hide
-        else
-            botright new
-            exec "resize " . a:height
-            try
-                exec "buffer " . g:term_buf
-            catch
-                call termopen($SHELL, {"detach": 0})
-                let g:term_buf = bufnr("")
-                set nonumber
-                set norelativenumber
-                set signcolumn=no
-            endtry
-            startinsert!
-            let g:term_win = win_getid()
-        endif
-    endfunction
+
     " toggle terminal on Alt-t
-    nnoremap <A-t> :call TermToggle(10)<CR>
-    tmap <A-t> <ESC>:call TermToggle(10)<CR>
+    nnoremap <A-t> :lua require('terminal').term_toggle(10)<CR>
+    tmap <A-t> <ESC>:lua require('terminal').term_toggle(10)<CR>
 
 "" Panel movement
     tnoremap <A-h> <C-\><C-n><C-w>h
@@ -125,6 +104,7 @@ call plug#end()
     nnoremap <leader>n :noh <CR>
     "" scripts
 	map <leader>c :w! \| !compiler "%"<CR>
+	map <leader>ct :w! \| lua require('terminal').term_execute("compiler " .. vim.fn.expand("%") .. " \n")<CR>
     map <leader>p :silent ! prev "<c-r>%"<CR><CR>
     "" spellcheck
     map <leader>e :setlocal spell! spelllang=en_us<CR>
