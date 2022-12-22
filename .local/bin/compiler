@@ -25,4 +25,5 @@ case "$ext" in
     c) make $base && $base ;; # add option for makefiles
     py) python $base.py;;
     tex) texcomp "$file";;
+    jl) julia --project=@. "$file";;
 esac

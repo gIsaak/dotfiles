@@ -9,6 +9,7 @@ require'nvim-treesitter.configs'.setup {
         "python",
         "lua",
         "scala",
+        "julia",
     },
     -- Highlight
     highlight = { enable = true },

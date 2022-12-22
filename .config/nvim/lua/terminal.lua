@@ -4,7 +4,7 @@ local M = {}
 local term_buf = nil
 local term_win = nil
 
--- Toggle a split window running a terminal buffer ath the bottom of the screen
+-- Toggle a split window running a terminal buffer at the bottom of the screen
 -- Souce python virtual environment if present
 M.term_toggle = function(height)
   if term_win ~= nil and vim.fn.win_gotoid(term_win) then
@@ -39,4 +39,41 @@ M.term_execute = function(ext_cmd)
     vim.fn.chansend(vim.b.terminal_job_id, ext_cmd)
 end
 
+-- TODO Clean terminal
+-- M.term_clean = function()
+--     vim.api.nvim_feedkeys("clear", "t", false)
+-- end
+
+-- Run script in python interpreter
+local python_run = function()
+    local sub = vim.fn.substitute
+    local filename = sub(vim.fn.expand("%"), ".py", "", "")
+    M.term_execute("python\n")
+    M.term_execute("import " .. sub(filename, "/", ".", "") .. "\n")
+end
+
+-- Run script in julia REPL
+local julia_run = function()
+    local filename = vim.fn.expand("%")
+    M.term_execute("julia\n")
+    M.term_execute('include("' .. filename .. '")\n')
+end
+
+-- table of configured repls
+local repls = {
+    ["python"] = python_run,
+    ["julia"] = julia_run
+}
+
+-- Run script in REPL based of filetype
+M.repl_execute = function()
+    local filetype = vim.bo.filetype
+    for lang, func in pairs(repls) do
+        if filetype == lang then
+            func()
+        end
+    end
+end
+
 return M
+

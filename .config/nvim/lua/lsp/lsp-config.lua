@@ -26,12 +26,12 @@ local on_attach = function()
   vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bopts)
   vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bopts)
   vim.keymap.set('n', '<leader>cl', vim.lsp.codelens.run, bopts)
-  vim.keymap.set('n', '<leader>o',  vim.lsp.buf.formatting, bopts)
+  -- vim.keymap.set('n', '<leader>o',  vim.lsp.buf.formatting, bopts)
 end
 -- Setup lspconfig.
 local lspconfig = require('lspconfig')
 -- nvim-cmp integration
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 local servers = {
   pylsp = true,
   texlab = true,
@@ -49,6 +49,7 @@ local servers = {
       },
     },
   },
+  julials = true,
 }
 
 local setup_server = function(server, config)
@@ -71,7 +72,7 @@ end
 
 
 -- Metals specific setup
-vim.opt_global.shortmess:remove("F"):append("c")
+-- vim.opt_global.shortmess:remove("F"):append("c")
 local metals_config = require('metals').bare_config()
 
 metals_config.settings = {

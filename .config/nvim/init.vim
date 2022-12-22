@@ -23,15 +23,23 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'nvim-lua/plenary.nvim'
     Plug 'nvim-telescope/telescope.nvim'
     Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+    Plug 'nvim-lua/popup.nvim'
+    Plug 'nvim-telescope/telescope-media-files.nvim'
     "" Status line
     Plug 'nvim-lualine/lualine.nvim'
     Plug 'kyazdani42/nvim-web-devicons'
     "" Comment
     Plug 'numToStr/Comment.nvim'
+    "" Surroundings
+    Plug 'tpope/vim-surround'
+    "" Repeat
+    Plug 'tpope/vim-repeat'
     "" Colorschemes
     Plug 'catppuccin/nvim', {'as': 'catppuccin'}
     """ Display hex colors
     Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
+    """ Julia
+    Plug 'JuliaEditorSupport/julia-vim'
 call plug#end()
 
 "" General
@@ -104,7 +112,8 @@ call plug#end()
     nnoremap <leader>n :noh <CR>
     "" scripts
 	map <leader>c :w! \| !compiler "%"<CR>
-	map <leader>ct :w! \| lua require('terminal').term_execute("compiler " .. vim.fn.expand("%") .. " \n")<CR>
+	map <leader>tc :w! \| lua require('terminal').term_execute("compiler " .. vim.fn.expand("%") .. " \n")<CR>
+	map <leader>tr :w! \| lua require('terminal').repl_execute()<CR>
     map <leader>p :silent ! prev "<c-r>%"<CR><CR>
     "" spellcheck
     map <leader>e :setlocal spell! spelllang=en_us<CR>

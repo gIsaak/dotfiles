@@ -33,7 +33,8 @@ source /usr/share/fzf/completion.bash
 [ -x "$(command -v nvim)" ] && alias vim="nvim" vimdiff="nvim -d"
 
 # Add ~/.local/bin and coursier to the PATH
-export PATH="$HOME/.local/share/coursier/bin:$HOME/.local/bin:$HOME/.local/bin/statusbar:$PATH"
+# export PATH="$HOME/.local/share/coursier/bin:$HOME/.local/bin:$HOME/.local/bin/statusbar:$PATH"
+export PATH="$PATH:$HOME/.local/bin:$HOME/.local/bin/statusbar:$HOME/.local/share/coursier/bin:$HOME/.local/bin/mattermost:$HOME/.local/bin/julia-1.8.3/bin"
 
 # Start ssh-agent
 [ -z "$SSH_AUTH_SOCK" ] && eval $(ssh-agent) && ssh-add ~/.ssh/git/id_rsa
@@ -47,6 +48,9 @@ export TERMINAL="alacritty"
 # Python environments
 export PYVENVS="$HOME/.local/bin/python/venv"
 alias pyactivate="source pyactivate"
+
+# Julia
+export JULIA_DEPOT_PATH="$XDG_DATA_HOME/julia"
 
 # Cleanup
 export XDG_CONFIG_HOME="$HOME/.config"
